@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '@unocss/reset/tailwind-compat.css';
-	//import 'uno.css';
+	import 'uno.css';
 	import '../styles.css';
 	import { Toaster } from 'svelte-sonner';
 
