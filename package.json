@@ -176,7 +176,6 @@
     "stripe": "17.3.1",
     "supabase": "^1.223.10",
     "svelte-sonner": "^0.3.28",
-    "svelte-svg-spinners": "^0.2.1",
     "svelte-virtuallists": "^1.4.0",
     "tailwindcss": "^3.4.15",
     "text-clipper": "^2.2.0",
@@ -194,5 +193,10 @@
   },
   "trustedDependencies": [
     "supabase"
-  ]
+  ],
+  "overrides": {
+    "svelte-social-links": {
+      "svelte": "^5.1.1"
+    }
+  }
 }
