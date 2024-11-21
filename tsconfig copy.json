@@ -1,0 +1,31 @@
+{
+	"extends": "./.svelte-kit/tsconfig.json",
+	"compilerOptions": {
+		"allowJs": true,
+		"checkJs": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"sourceMap": false,
+		"strict": true,
+		"target": "es2022",
+		"verbatimModuleSyntax": true,
+		/* "moduleDetection": "force", */
+		"noUncheckedIndexedAccess": true,
+		/* "jsx": "react", */
+		/* "moduleResolution": "NodeNext", */
+		"types": ["@cloudflare/workers-types", "turnstile-types"]
+	},
+	"files": [
+		"./supabase_init/dummy.ts",
+		"./supabase_init/names.ts",
+		"./supabase_init/addData.ts"
+	]
+
+	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
+	//
+	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes
+	// from the referenced tsconfig.json - TypeScript does not merge them in
+	//"references": [{ "path": "../../packages/richtext/tsconfig.json" }]
+}

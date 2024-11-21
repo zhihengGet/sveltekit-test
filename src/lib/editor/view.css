@@ -1,0 +1,59 @@
+.editor-container-shell {
+	--lexcial-headers: inherit;
+	--lexcial-text: var(--reader-color);
+	--lexcial-container-bg: var(--reader-backgroundColor);
+	--lexical-collapsible-container: var(--reader-backgroundColor);
+	--lexical-collapsible-title: #123123;
+	--lexical-page-break-bg: #123123;
+	--lexical-page-break: #509777;
+	--lexical-code-filter-invert: var(--reader-darken);
+	--lexical-collapsible-filter-invert: var(--reader-darken);
+}
+.editor-container p {
+	color: var(--lexcial-text) !important;
+}
+.editor-container {
+	background-color: var(--lexcial-container-bg) !important;
+	color: var(--lexcial-text) !important;
+}
+.editor-container code {
+	filter: var(--lexical-code-filter-invert);
+}
+.editor-container {
+	div,
+	p,
+	span {
+		color: var(--lexcial-text) !important;
+	}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		color: var(--lexcial-headers) !important;
+	}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		span {
+			color: var(--lexcial-headers) !important;
+		}
+	}
+	.Collapsible__container {
+		filter: var(--lexical-collapsible-filter-invert);
+	}
+	.Collapsible__title {
+		filter: var(--lexical-collapsible-filter-invert);
+	}
+	[type='page-break'] {
+		background-color: var(--lexical-page-break-bg) !important;
+		color: var(--lexical-page-break) !important;
+	}
+	[type='page-break']::after {
+		filter: var(--lexical-code-filter-invert);
+	}
+}

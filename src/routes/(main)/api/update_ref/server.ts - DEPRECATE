@@ -1,0 +1,94 @@
+import { sqlInstance } from '$lib/supabaseClient/postgresInstance.server';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { error, json } from '@sveltejs/kit';
+import { format, isAfter, subMilliseconds } from 'date-fns';
+import type { RequestHandler } from './$types';
+import { social } from './social';
+import top_sites from 'top-sites';
+export const POST: RequestHandler = async ({
+	request,
+	platform,
+	locals: { supabase }
+}) => {
+	const client = supabase; //  createClient<Database>(PUBLIC_SUPABASE_URL, SUPABASE_ADMIN);
+	const { referrer, bid } = (await request.json()) as {
+		referrer: string;
+		bid: string;
+	};
+	console.log('update referrer ', referrer, bid);
+	// first check if book id exists
+	if (URL.canParse(referrer) == false || typeof bid != 'number') {
+		return json({ err: 'bad request,invalid arg' }, { status: 400 });
+	}
+
+	const b = await client
+		.from('books')
+		.select('id,author_id,updated_at')
+		.eq('id', 2)
+		.limit(1)
+		.single();
+
+	console.log(b);
+	if (b.error) return json({ err: 'bad request' }, { status: 401 });
+	console.log('book', b);
+	/*const params = {
+		created_at: new Date().toUTCString(),
+		clicks: 1,
+		author_id: b.data.author_id,
+		book_id: b.data.id
+	};
+	 const res = await sql`
+	INSERT INTO book_clicks ${sql(params)}
+	  ON CONFLICT (created_at, book_id) DO UPDATE
+	SET clicks =book_clicks.clicks+1`;
+	console.log(res); */
+	const { origin, protocol } = new URL(referrer);
+	console.log('origin', new URL(referrer));
+	const valid_host = Math.max(
+		top_sites.findIndex((v) => {
+			return v.rootDomain.includes(origin) || origin.endsWith(v.rootDomain);
+		}),
+		social.findIndex((v) => origin.includes(v.toLocaleLowerCase()))
+	);
+	if (protocol != 'https:') {
+		console.warn('bad protocol for book view update');
+		return json(null, { status: 400 });
+	}
+	if (valid_host == -1) {
+		console.warn('bad referrer', referrer);
+		return json(null, { status: 400 });
+	}
+	const id = platform!.env.do_throttler.idFromName(b.data.id + ':referrer');
+	const stub = platform!.env.do_throttler.get(id);
+
+	if (!stub) error(500, { message: 'cannot find stub' });
+	const timeObject = await stub.fetch('http://www.google.com');
+	const throttle = (await timeObject.json()) as { '5sec': [number, number] };
+	const [delay, last_update] = throttle['5sec'];
+	if (!last_update) return error(500, 'missing last updated at');
+	const curr = format(Date.now(), 'yyyy-MM-dd');
+	const shouldUpdate = isAfter(
+		subMilliseconds(Date.now(), delay),
+		last_update
+		//  500 <= Date.now - updated_at
+	);
+	if (!shouldUpdate) return error(500);
+	console.log('curr', curr);
+	const p = {
+		book_id: b.data.id,
+		author_id: b.data.author_id,
+		referrer: origin
+	};
+	const sql = sqlInstance();
+	const data =
+		await sql`insert into book_referrer ${sql(p)} ON CONFLICT (created_at,referrer, book_id) DO UPDATE
+	SET num =book_referrer.num+1`;
+	console.log(data);
+
+	return json(null, { status: 200 });
+};
+
+/* export const OPTIONS: RequestHandler = ({ request }) => {
+	return json({ a: 1 }, { status: 200 });
+};
+ */
